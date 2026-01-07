@@ -1,120 +1,82 @@
 const player = document.getElementById("player");
-const game = document.getElementById("game");
-const scoreEl = document.getElementById("score");
-const gameOverEl = document.getElementById("gameOver");
-const restartBtn = document.getElementById("restartBtn");
-const speedControl = document.getElementById("speedControl");
-const speedValue = document.getElementById("speedValue");
+const enemy = document.getElementById("enemy");
+const breads = document.querySelectorAll(".bread");
+const countEl = document.getElementById("count");
+const message = document.getElementById("message");
 
-let isJumping = false;
-let y = 0;
-let score = 0;
-let speed = 6;
+let x = 150;
+let y = 60;
+let count = 0;
 let alive = true;
-let baseBottom = 100; // CSSと合わせる
 
-/* ジャンプ */
-function jump() {
-  if (!alive || isJumping) return;
+const speed = 20;
 
-  isJumping = true;
-  let up = setInterval(() => {
-    if (y >= 140) {
-      clearInterval(up);
-      let down = setInterval(() => {
-        if (y <= 0) {
-          clearInterval(down);
-          isJumping = false;
-        }
-        y -= 7;
-        player.style.bottom = baseBottom + y + "px";
-      }, 20);
-    }
-    y += 7;
-    player.style.bottom = baseBottom + y + "px";
-  }, 20);
-}
-
-document.addEventListener("touchstart", e => {
-  if (e.target.id === "restartBtn") return;
-  jump();
-});
-
-document.addEventListener("keydown", e => {
-  if (e.code === "Space") jump();
-});
-
-/* 敵生成 */
-function spawnEnemy() {
+/* 移動 */
+function move(dx, dy) {
   if (!alive) return;
 
-  const enemy = document.createElement("div");
-  enemy.className = "obstacle";
-  game.appendChild(enemy);
+  x += dx;
+  y += dy;
 
-  let x = window.innerWidth;
-  enemy.style.left = x + "px";
+  x = Math.max(0, Math.min(window.innerWidth - 50, x));
+  y = Math.max(50, Math.min(window.innerHeight - 150, y));
 
-  let passed = false;
+  player.style.left = x + "px";
+  player.style.top = y + "px";
 
-  let timer = setInterval(() => {
-    if (!alive) {
-      clearInterval(timer);
-      return;
-    }
-
-    x -= speed;
-    enemy.style.left = x + "px";
-
-    // 当たり判定
-    if (x < 110 && x > 40 && y < 40) {
-      endGame();
-      clearInterval(timer);
-    }
-
-    // スコア
-    if (x < 40 && !passed) {
-      passed = true;
-      score++;
-      scoreEl.textContent = "SCORE: " + score;
-    }
-
-    if (x < -60) {
-      clearInterval(timer);
-      enemy.remove();
-    }
-  }, 20);
-
-  setTimeout(spawnEnemy, 1600);
+  checkBread();
+  checkEnemy();
 }
 
-/* ゲームオーバー */
-function endGame() {
+/* パン取得 */
+function checkBread() {
+  breads.forEach(bread => {
+    if (bread.style.display === "none") return;
+
+    if (isHit(player, bread)) {
+      bread.style.display = "none";
+      count++;
+      countEl.textContent = count;
+    }
+  });
+}
+
+/* 敵判定 */
+function checkEnemy() {
+  if (isHit(player, enemy)) {
+    if (count >= 5) {
+      end("WIN! ばいきんをたおした！");
+    } else {
+      end("OUT… パンが足りない！");
+    }
+  }
+}
+
+function end(text) {
   alive = false;
-  gameOverEl.style.display = "block";
+  message.style.display = "flex";
+  message.textContent = text;
 }
 
-/* リスタート */
-restartBtn.addEventListener("click", () => {
-  alive = true;
-  gameOverEl.style.display = "none";
+/* 当たり判定 */
+function isHit(a, b) {
+  const ar = a.getBoundingClientRect();
+  const br = b.getBoundingClientRect();
+  return !(
+    ar.right < br.left ||
+    ar.left > br.right ||
+    ar.bottom < br.top ||
+    ar.top > br.bottom
+  );
+}
 
-  document.querySelectorAll(".obstacle").forEach(e => e.remove());
-
-  score = 0;
-  scoreEl.textContent = "SCORE: 0";
-
-  y = 0;
-  isJumping = false;
-  player.style.bottom = baseBottom + "px";
-
-  spawnEnemy();
+/* 十字キー操作 */
+document.querySelectorAll("#pad button").forEach(btn => {
+  btn.addEventListener("touchstart", () => {
+    const dir = btn.dataset.dir;
+    if (dir === "up") move(0, -speed);
+    if (dir === "down") move(0, speed);
+    if (dir === "left") move(-speed, 0);
+    if (dir === "right") move(speed, 0);
+  });
 });
-
-/* スピード調整（即反映） */
-speedControl.addEventListener("input", e => {
-  speed = Number(e.target.value);
-  speedValue.textContent = speed;
-});
-
-spawnEnemy();
