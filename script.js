@@ -2,18 +2,20 @@ const player = document.getElementById("player");
 const game = document.getElementById("game");
 const scoreEl = document.getElementById("score");
 const gameOverEl = document.getElementById("gameOver");
+const restartBtn = document.getElementById("restartBtn");
 const speedControl = document.getElementById("speedControl");
 
 let isJumping = false;
-let gravity = 0.9;
 let position = 0;
 let score = 0;
-let gameSpeed = 5;
-let gameRunning = true;
+let speed = 6;
+let alive = true;
 
-/* ===== ジャンプ ===== */
+/* ジャンプ */
 function jump() {
-  if (isJumping) return;
+  if (isJumping || !alive) return;
+
+  isJumping = true;
   let up = setInterval(() => {
     if (position >= 120) {
       clearInterval(up);
@@ -22,12 +24,11 @@ function jump() {
           clearInterval(down);
           isJumping = false;
         }
-        position -= 5;
+        position -= 6;
         player.style.bottom = position + 60 + "px";
       }, 20);
     }
-    isJumping = true;
-    position += 5;
+    position += 6;
     player.style.bottom = position + 60 + "px";
   }, 20);
 }
@@ -37,61 +38,71 @@ document.addEventListener("keydown", e => {
   if (e.code === "Space") jump();
 });
 
-/* ===== 敵生成 ===== */
-function createObstacle() {
-  if (!gameRunning) return;
+/* 敵生成 */
+function spawnEnemy() {
+  if (!alive) return;
 
-  const obstacle = document.createElement("div");
-  obstacle.classList.add("obstacle");
-  game.appendChild(obstacle);
+  const enemy = document.createElement("div");
+  enemy.className = "obstacle";
+  game.appendChild(enemy);
 
-  let obstacleLeft = window.innerWidth;
-  obstacle.style.left = obstacleLeft + "px";
+  let x = window.innerWidth;
+  enemy.style.left = x + "px";
 
-  let move = setInterval(() => {
-    if (!gameRunning) {
-      clearInterval(move);
+  let passed = false;
+
+  let timer = setInterval(() => {
+    if (!alive) {
+      clearInterval(timer);
       return;
     }
 
-    obstacleLeft -= gameSpeed;
-    obstacle.style.left = obstacleLeft + "px";
+    x -= speed;
+    enemy.style.left = x + "px";
 
     // 当たり判定
-    if (
-      obstacleLeft < 130 &&
-      obstacleLeft > 50 &&
-      position < 50
-    ) {
-      gameOver();
-      clearInterval(move);
+    if (x < 120 && x > 40 && position < 45) {
+      endGame();
+      clearInterval(timer);
     }
 
-    if (obstacleLeft < -60) {
-      clearInterval(move);
-      game.removeChild(obstacle);
+    // スコア加算（確実に通過後）
+    if (x < 40 && !passed) {
+      passed = true;
       score++;
       scoreEl.textContent = "SCORE: " + score;
     }
+
+    if (x < -60) {
+      clearInterval(timer);
+      enemy.remove();
+    }
   }, 20);
 
-  setTimeout(createObstacle, 2000);
+  setTimeout(spawnEnemy, 1800);
 }
 
-/* ===== ゲームオーバー ===== */
-function gameOver() {
-  gameRunning = false;
+/* ゲームオーバー */
+function endGame() {
+  alive = false;
   gameOverEl.style.display = "block";
 }
 
-/* ===== リスタート ===== */
-function restart() {
-  location.reload();
-}
-
-/* ===== スピード調整 ===== */
-speedControl.addEventListener("input", e => {
-  gameSpeed = Number(e.target.value);
+/* リスタート（reload禁止） */
+restartBtn.addEventListener("click", () => {
+  gameOverEl.style.display = "none";
+  document.querySelectorAll(".obstacle").forEach(e => e.remove());
+  score = 0;
+  scoreEl.textContent = "SCORE: 0";
+  position = 0;
+  player.style.bottom = "60px";
+  alive = true;
+  spawnEnemy();
 });
 
-createObstacle();
+/* スピード調整 */
+speedControl.addEventListener("input", e => {
+  speed = Number(e.target.value);
+});
+
+spawnEnemy();
