@@ -2,21 +2,31 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>パンヒーローRUN</title>
+  <title>パンヒーローラン</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="game">
+  <div id="score">SCORE: 0</div>
+
   <div id="player">
-    <span class="cheek left"></span>
-    <span class="cheek right"></span>
+    <div class="nose"></div>
+    <div class="cheek left"></div>
+    <div class="cheek right"></div>
   </div>
 
   <div id="ground"></div>
 
-  <div id="message">タップでジャンプ！</div>
+  <div id="gameOver">
+    <p>GAME OVER</p>
+    <button onclick="restart()">RESTART</button>
+    <div class="speed">
+      SPEED:
+      <input type="range" min="3" max="10" value="5" id="speedControl">
+    </div>
+  </div>
 </div>
 
 <script src="script.js"></script>
