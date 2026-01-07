@@ -1,73 +1,97 @@
-const game = document.getElementById("game");
 const player = document.getElementById("player");
-const message = document.getElementById("message");
+const game = document.getElementById("game");
+const scoreEl = document.getElementById("score");
+const gameOverEl = document.getElementById("gameOver");
+const speedControl = document.getElementById("speedControl");
 
 let isJumping = false;
-let velocity = 0;
-let gravity = 1;
-let obstacles = [];
-let gameOver = false;
+let gravity = 0.9;
+let position = 0;
+let score = 0;
+let gameSpeed = 5;
+let gameRunning = true;
 
-// 初期位置
-player.style.bottom = "60px";
+/* ===== ジャンプ ===== */
+function jump() {
+  if (isJumping) return;
+  let up = setInterval(() => {
+    if (position >= 120) {
+      clearInterval(up);
+      let down = setInterval(() => {
+        if (position <= 0) {
+          clearInterval(down);
+          isJumping = false;
+        }
+        position -= 5;
+        player.style.bottom = position + 60 + "px";
+      }, 20);
+    }
+    isJumping = true;
+    position += 5;
+    player.style.bottom = position + 60 + "px";
+  }, 20);
+}
 
-// タップでジャンプ
-document.addEventListener("click", () => {
-  if (isJumping || gameOver) return;
-  isJumping = true;
-  velocity = 18;
+document.addEventListener("touchstart", jump);
+document.addEventListener("keydown", e => {
+  if (e.code === "Space") jump();
 });
 
-// 敵生成
+/* ===== 敵生成 ===== */
 function createObstacle() {
-  if (gameOver) return;
-  const obs = document.createElement("div");
-  obs.classList.add("obstacle");
-  obs.style.left = window.innerWidth + "px";
-  game.appendChild(obs);
-  obstacles.push(obs);
-}
+  if (!gameRunning) return;
 
-setInterval(createObstacle, 2000);
+  const obstacle = document.createElement("div");
+  obstacle.classList.add("obstacle");
+  game.appendChild(obstacle);
 
-// メインループ
-function gameLoop() {
-  if (gameOver) return;
+  let obstacleLeft = window.innerWidth;
+  obstacle.style.left = obstacleLeft + "px";
 
-  // ジャンプ処理
-  if (isJumping) {
-    let bottom = parseInt(player.style.bottom);
-    bottom += velocity;
-    velocity -= gravity;
-
-    if (bottom <= 60) {
-      bottom = 60;
-      isJumping = false;
+  let move = setInterval(() => {
+    if (!gameRunning) {
+      clearInterval(move);
+      return;
     }
-    player.style.bottom = bottom + "px";
-  }
 
-  // 敵移動 & 当たり判定
-  obstacles.forEach((obs, index) => {
-    let left = obs.offsetLeft;
-    obs.style.left = left - 6 + "px";
+    obstacleLeft -= gameSpeed;
+    obstacle.style.left = obstacleLeft + "px";
 
+    // 当たり判定
     if (
-      left < 120 &&
-      left > 70 &&
-      parseInt(player.style.bottom) < 110
+      obstacleLeft < 130 &&
+      obstacleLeft > 50 &&
+      position < 50
     ) {
-      gameOver = true;
-      message.textContent = "GAME OVER";
+      gameOver();
+      clearInterval(move);
     }
 
-    if (left < -60) {
-      obs.remove();
-      obstacles.splice(index, 1);
+    if (obstacleLeft < -60) {
+      clearInterval(move);
+      game.removeChild(obstacle);
+      score++;
+      scoreEl.textContent = "SCORE: " + score;
     }
-  });
+  }, 20);
 
-  requestAnimationFrame(gameLoop);
+  setTimeout(createObstacle, 2000);
 }
 
-gameLoop();
+/* ===== ゲームオーバー ===== */
+function gameOver() {
+  gameRunning = false;
+  gameOverEl.style.display = "block";
+}
+
+/* ===== リスタート ===== */
+function restart() {
+  location.reload();
+}
+
+/* ===== スピード調整 ===== */
+speedControl.addEventListener("input", e => {
+  gameSpeed = Number(e.target.value);
+});
+
+createObstacle();
