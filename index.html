@@ -4,8 +4,15 @@
   <meta charset="UTF-8">
   <title>パンヒーローラン</title>
 
-  <!-- Pixel 9 横画面最適化 -->
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport"
+        content="width=device-width,
+                 height=device-height,
+                 initial-scale=1.0,
+                 user-scalable=no">
+
+  <!-- 縦画面推奨 -->
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -22,15 +29,17 @@
 
   <div id="ground"></div>
 
+  <!-- スピード調整（常時表示） -->
+  <div id="speedUI">
+    SPEED
+    <input type="range" min="1" max="20" value="6" id="speedControl">
+    <span id="speedValue">6</span>
+  </div>
+
   <div id="gameOver">
     <div class="panel">
       <p>GAME OVER</p>
       <button id="restartBtn">RESTART</button>
-
-      <div class="speed">
-        SPEED
-        <input type="range" min="3" max="12" value="6" id="speedControl">
-      </div>
     </div>
   </div>
 </div>
