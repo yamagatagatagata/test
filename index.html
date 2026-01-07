@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>パンヒーローラン</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Pixel 9 横画面最適化 -->
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,11 +23,14 @@
   <div id="ground"></div>
 
   <div id="gameOver">
-    <p>GAME OVER</p>
-    <button onclick="restart()">RESTART</button>
-    <div class="speed">
-      SPEED:
-      <input type="range" min="3" max="10" value="5" id="speedControl">
+    <div class="panel">
+      <p>GAME OVER</p>
+      <button id="restartBtn">RESTART</button>
+
+      <div class="speed">
+        SPEED
+        <input type="range" min="3" max="12" value="6" id="speedControl">
+      </div>
     </div>
   </div>
 </div>
