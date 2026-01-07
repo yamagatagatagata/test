@@ -2,46 +2,39 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>パンヒーローラン</title>
-
-  <meta name="viewport"
-        content="width=device-width,
-                 height=device-height,
-                 initial-scale=1.0,
-                 user-scalable=no">
-
-  <!-- 縦画面推奨 -->
-  <meta name="screen-orientation" content="portrait">
-  <meta name="x5-orientation" content="portrait">
-
+  <title>パンヒーロー パン集め</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="game">
-  <div id="score">SCORE: 0</div>
+  <div id="info">パン: <span id="count">0</span> / 5</div>
 
   <div id="player">
     <div class="nose"></div>
-    <div class="cheek left"></div>
-    <div class="cheek right"></div>
   </div>
 
-  <div id="ground"></div>
+  <div id="enemy"></div>
 
-  <!-- スピード調整（常時表示） -->
-  <div id="speedUI">
-    SPEED
-    <input type="range" min="1" max="20" value="6" id="speedControl">
-    <span id="speedValue">6</span>
-  </div>
+  <!-- パン -->
+  <div class="bread" style="top:120px; left:40px"></div>
+  <div class="bread" style="top:220px; left:200px"></div>
+  <div class="bread" style="top:320px; left:80px"></div>
+  <div class="bread" style="top:420px; left:220px"></div>
+  <div class="bread" style="top:520px; left:120px"></div>
 
-  <div id="gameOver">
-    <div class="panel">
-      <p>GAME OVER</p>
-      <button id="restartBtn">RESTART</button>
+  <!-- 十字キー -->
+  <div id="pad">
+    <button data-dir="up">▲</button>
+    <div>
+      <button data-dir="left">◀</button>
+      <button data-dir="right">▶</button>
     </div>
+    <button data-dir="down">▼</button>
   </div>
+
+  <div id="message"></div>
 </div>
 
 <script src="script.js"></script>
