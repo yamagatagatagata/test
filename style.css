@@ -1,3 +1,16 @@
+body {
+  margin: 0;
+  background: #87ceeb;
+  overflow: hidden;
+}
+
+#game {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* ===== プレイヤー（パンヒーロー風） ===== */
 #player {
   width: 60px;
   height: 60px;
@@ -28,13 +41,68 @@
 }
 
 /* ほっぺ */
-#player span {
+.cheek {
   position: absolute;
   bottom: 14px;
-  left: 50%;
   width: 10px;
   height: 10px;
   background: red;
   border-radius: 50%;
-  transform: translateX(-50%);
+}
+
+.cheek.left {
+  left: 12px;
+}
+.cheek.right {
+  right: 12px;
+}
+
+/* ===== 地面 ===== */
+#ground {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background: green;
+}
+
+/* ===== 敵（ばいきん風） ===== */
+.obstacle {
+  width: 50px;
+  height: 50px;
+  background: #7b3f98;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 60px;
+}
+
+/* ツノ */
+.obstacle::before,
+.obstacle::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  width: 10px;
+  height: 15px;
+  background: #7b3f98;
+}
+
+.obstacle::before {
+  left: 5px;
+  transform: rotate(-30deg);
+}
+.obstacle::after {
+  right: 5px;
+  transform: rotate(30deg);
+}
+
+/* ===== メッセージ ===== */
+#message {
+  position: absolute;
+  top: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
 }
