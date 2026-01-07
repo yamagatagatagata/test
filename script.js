@@ -4,36 +4,42 @@ const scoreEl = document.getElementById("score");
 const gameOverEl = document.getElementById("gameOver");
 const restartBtn = document.getElementById("restartBtn");
 const speedControl = document.getElementById("speedControl");
+const speedValue = document.getElementById("speedValue");
 
 let isJumping = false;
-let position = 0;
+let y = 0;
 let score = 0;
 let speed = 6;
 let alive = true;
+let baseBottom = 100; // CSSと合わせる
 
 /* ジャンプ */
 function jump() {
-  if (isJumping || !alive) return;
+  if (!alive || isJumping) return;
 
   isJumping = true;
   let up = setInterval(() => {
-    if (position >= 120) {
+    if (y >= 140) {
       clearInterval(up);
       let down = setInterval(() => {
-        if (position <= 0) {
+        if (y <= 0) {
           clearInterval(down);
           isJumping = false;
         }
-        position -= 6;
-        player.style.bottom = position + 60 + "px";
+        y -= 7;
+        player.style.bottom = baseBottom + y + "px";
       }, 20);
     }
-    position += 6;
-    player.style.bottom = position + 60 + "px";
+    y += 7;
+    player.style.bottom = baseBottom + y + "px";
   }, 20);
 }
 
-document.addEventListener("touchstart", jump);
+document.addEventListener("touchstart", e => {
+  if (e.target.id === "restartBtn") return;
+  jump();
+});
+
 document.addEventListener("keydown", e => {
   if (e.code === "Space") jump();
 });
@@ -61,12 +67,12 @@ function spawnEnemy() {
     enemy.style.left = x + "px";
 
     // 当たり判定
-    if (x < 120 && x > 40 && position < 45) {
+    if (x < 110 && x > 40 && y < 40) {
       endGame();
       clearInterval(timer);
     }
 
-    // スコア加算（確実に通過後）
+    // スコア
     if (x < 40 && !passed) {
       passed = true;
       score++;
@@ -79,7 +85,7 @@ function spawnEnemy() {
     }
   }, 20);
 
-  setTimeout(spawnEnemy, 1800);
+  setTimeout(spawnEnemy, 1600);
 }
 
 /* ゲームオーバー */
@@ -88,21 +94,27 @@ function endGame() {
   gameOverEl.style.display = "block";
 }
 
-/* リスタート（reload禁止） */
+/* リスタート */
 restartBtn.addEventListener("click", () => {
+  alive = true;
   gameOverEl.style.display = "none";
+
   document.querySelectorAll(".obstacle").forEach(e => e.remove());
+
   score = 0;
   scoreEl.textContent = "SCORE: 0";
-  position = 0;
-  player.style.bottom = "60px";
-  alive = true;
+
+  y = 0;
+  isJumping = false;
+  player.style.bottom = baseBottom + "px";
+
   spawnEnemy();
 });
 
-/* スピード調整 */
+/* スピード調整（即反映） */
 speedControl.addEventListener("input", e => {
   speed = Number(e.target.value);
+  speedValue.textContent = speed;
 });
 
 spawnEnemy();
