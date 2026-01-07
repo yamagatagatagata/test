@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   background: #87ceeb;
@@ -7,22 +11,22 @@ body {
 
 #game {
   width: 100vw;
-  height: 100vh;
+  height: 100dvh; /* Android対策 */
   position: relative;
 }
 
-/* ===== スコア ===== */
+/* スコア */
 #score {
   position: absolute;
   top: 10px;
-  left: 20px;
-  font-size: 24px;
+  left: 16px;
+  font-size: 22px;
   color: white;
   font-weight: bold;
   z-index: 10;
 }
 
-/* ===== プレイヤー（パンヒーロー風） ===== */
+/* プレイヤー */
 #player {
   width: 60px;
   height: 60px;
@@ -31,6 +35,7 @@ body {
   position: absolute;
   bottom: 60px;
   left: 80px;
+  position: relative; /* ← 超重要 */
 }
 
 /* 目 */
@@ -46,15 +51,15 @@ body {
 }
 
 #player::before { left: 18px; }
-#player::after { right: 18px; }
+#player::after  { right: 18px; }
 
-/* 鼻（赤い丸） */
+/* 赤い鼻 */
 .nose {
   position: absolute;
   top: 28px;
   left: 50%;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   background: red;
   border-radius: 50%;
   transform: translateX(-50%);
@@ -63,17 +68,17 @@ body {
 /* ほっぺ */
 .cheek {
   position: absolute;
-  bottom: 14px;
+  bottom: 12px;
   width: 10px;
   height: 10px;
   background: red;
   border-radius: 50%;
 }
 
-.cheek.left { left: 10px; }
+.cheek.left  { left: 10px; }
 .cheek.right { right: 10px; }
 
-/* ===== 地面 ===== */
+/* 地面 */
 #ground {
   position: absolute;
   bottom: 0;
@@ -82,7 +87,7 @@ body {
   background: green;
 }
 
-/* ===== 敵（ばいきん風） ===== */
+/* 敵 */
 .obstacle {
   width: 50px;
   height: 50px;
@@ -92,45 +97,28 @@ body {
   bottom: 60px;
 }
 
-/* ツノ */
-.obstacle::before,
-.obstacle::after {
-  content: "";
-  position: absolute;
-  top: -10px;
-  width: 10px;
-  height: 15px;
-  background: #7b3f98;
-}
-
-.obstacle::before {
-  left: 5px;
-  transform: rotate(-30deg);
-}
-.obstacle::after {
-  right: 5px;
-  transform: rotate(30deg);
-}
-
-/* ===== ゲームオーバー ===== */
+/* GAME OVER */
 #gameOver {
   display: none;
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.6);
-  color: white;
-  text-align: center;
-  padding-top: 20vh;
   z-index: 20;
 }
 
-#gameOver p {
+.panel {
+  margin-top: 25vh;
+  text-align: center;
+  color: white;
+}
+
+.panel p {
   font-size: 36px;
 }
 
-#gameOver button {
+.panel button {
   font-size: 20px;
-  padding: 10px 20px;
+  padding: 10px 24px;
 }
 
 .speed {
