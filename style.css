@@ -2,12 +2,24 @@ body {
   margin: 0;
   background: #87ceeb;
   overflow: hidden;
+  font-family: sans-serif;
 }
 
 #game {
   width: 100vw;
   height: 100vh;
   position: relative;
+}
+
+/* ===== スコア ===== */
+#score {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
+  z-index: 10;
 }
 
 /* ===== プレイヤー（パンヒーロー風） ===== */
@@ -33,11 +45,19 @@ body {
   border-radius: 50%;
 }
 
-#player::before {
-  left: 18px;
-}
-#player::after {
-  right: 18px;
+#player::before { left: 18px; }
+#player::after { right: 18px; }
+
+/* 鼻（赤い丸） */
+.nose {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background: red;
+  border-radius: 50%;
+  transform: translateX(-50%);
 }
 
 /* ほっぺ */
@@ -50,12 +70,8 @@ body {
   border-radius: 50%;
 }
 
-.cheek.left {
-  left: 12px;
-}
-.cheek.right {
-  right: 12px;
-}
+.cheek.left { left: 10px; }
+.cheek.right { right: 10px; }
 
 /* ===== 地面 ===== */
 #ground {
@@ -96,13 +112,27 @@ body {
   transform: rotate(30deg);
 }
 
-/* ===== メッセージ ===== */
-#message {
+/* ===== ゲームオーバー ===== */
+#gameOver {
+  display: none;
   position: absolute;
-  top: 20px;
-  width: 100%;
-  text-align: center;
-  font-size: 24px;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
   color: white;
-  font-weight: bold;
+  text-align: center;
+  padding-top: 20vh;
+  z-index: 20;
+}
+
+#gameOver p {
+  font-size: 36px;
+}
+
+#gameOver button {
+  font-size: 20px;
+  padding: 10px 20px;
+}
+
+.speed {
+  margin-top: 20px;
 }
