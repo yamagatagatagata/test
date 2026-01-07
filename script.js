@@ -1,49 +1,68 @@
-const box = document.getElementById("box");
-const scoreEl = document.getElementById("score");
-const timeEl = document.getElementById("time");
+const game = document.getElementById("game");
+const player = document.getElementById("player");
 const message = document.getElementById("message");
 
-let score = 0;
-let time = 10;
-let playing = false;
-let timer;
+let jumping = false;
+let gameOver = false;
+let gravity = 0;
+let obstacles = [];
 
-function randomPosition() {
-  const x = Math.random() * (window.innerWidth - 80);
-  const y = Math.random() * (window.innerHeight - 120) + 60;
-  box.style.left = x + "px";
-  box.style.top = y + "px";
+function jump() {
+  if (jumping || gameOver) return;
+  jumping = true;
+  gravity = 15;
 }
 
-box.addEventListener("click", () => {
-  if (!playing) return;
-  score++;
-  scoreEl.textContent = score;
-  randomPosition();
-});
+document.addEventListener("click", jump);
 
-document.body.addEventListener("click", () => {
-  if (playing) return;
+function createObstacle() {
+  const obs = document.createElement("div");
+  obs.classList.add("obstacle");
+  obs.style.left = "100%";
+  game.appendChild(obs);
+  obstacles.push(obs);
+}
 
-  playing = true;
-  score = 0;
-  time = 10;
-  scoreEl.textContent = score;
-  timeEl.textContent = time;
-  message.textContent = "";
+setInterval(createObstacle, 2000);
 
-  box.style.display = "block";
-  randomPosition();
+function gameLoop() {
+  if (gameOver) return;
 
-  timer = setInterval(() => {
-    time--;
-    timeEl.textContent = time;
-
-    if (time <= 0) {
-      clearInterval(timer);
-      playing = false;
-      box.style.display = "none";
-      message.textContent = `終了！スコア：${score}`;
+  // ジャンプ処理
+  if (jumping) {
+    let bottom = parseInt(player.style.bottom) || 60;
+    bottom += gravity;
+    gravity -= 1;
+    if (bottom <= 60) {
+      bottom = 60;
+      jumping = false;
     }
-  }, 1000);
-});
+    player.style.bottom = bottom + "px";
+  }
+
+  // 障害物移動
+  obstacles.forEach((obs, index) => {
+    let left = obs.offsetLeft;
+    obs.style.left = left - 5 + "px";
+
+    // 当たり判定
+    if (
+      left < 130 &&
+      left > 80 &&
+      parseInt(player.style.bottom) < 110
+    ) {
+      gameOver = true;
+      message.textContent = "GAME OVER";
+    }
+
+    // 画面外
+    if (left < -50) {
+      obs.remove();
+      obstacles.splice(index, 1);
+    }
+  });
+
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
